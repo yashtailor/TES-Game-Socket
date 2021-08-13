@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+   <head><title>Hello world</title></head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+   <script>
+      function game(){
+         const name = document.getElementById('name').value;
+         localStorage.setItem('name',name);
+         const gamePage = document.createElement('a');
+         gamePage.setAttribute('href','/game');
+         gamePage.click();
+      }
+   </script>
+   <body style="background-color: #0D1418; color:wheat; height:100vh; font-size: large;">
+      <div class="container">
+         <h1 style="text-align: center;">TES Game Mania</h1>
+         <input type="text" placeholder="Enter Name" id="name" class="input" style="margin:5px;">
+         <button onclick="game()" class="button is-primary" style="margin: 5px;">Next</button>
+      </div>
+   </body>
+   <script>
+      const name = localStorage.getItem('name');
+      if(name!=null){
+         document.getElementById('name').value = name;
+      }
+   </script>
+</html>

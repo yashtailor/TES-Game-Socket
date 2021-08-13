@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+   <head><title>Hello world</title></head>
+   <script src="/socket.io/socket.io.js"></script>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+   <script>
+      const socket = io();
+      socket.emit('join-game',{
+          participantName: localStorage.getItem('name')
+      })
+      var optionSelected = null;
+      socket.on('broadcast-question',(data)=>{
+        document.getElementById('questionName').innerText = data.name;
+        data.options.forEach((option,idx) => {
+            const newOption = document.createElement('div');
+            newOption.innerHTML = option;
+            newOption.style.backgroundColor = "yellow";
+            newOption.style.margin = "5px";
+            newOption.style.cursor = "pointer";
+            newOption.classList.add('options');
+            newOption.addEventListener('click',()=>{
+                const sendData = {
+                    userName : localStorage.getItem('name'),
+                    optionSelected : idx
+                }
+                socket.emit('question-answer',sendData);
+                newOption.style.backgroundColor = "blue";
+                console.log(optionSelected);
+                optionSelected = idx;
+                newOption.parentNode.style.pointerEvents = 'None';
+            });
+            document.getElementById('optionsDiv').appendChild(newOption);
+        });
+      });
+
+      socket.on('broadcast-answer',(data)=>{
+          console.log("data==",data,optionSelected);
+          if(optionSelected == data){
+            document.getElementsByClassName('options')[optionSelected].style.backgroundColor = "green";
+          }else{
+            document.getElementsByClassName('options')[optionSelected].style.backgroundColor = "red";
+            document.getElementsByClassName('options')[data].style.backgroundColor = "green";
+          }
+      })
+
+      socket.on('broadcast-clear',()=>{
+          document.getElementById('questionName').innerHTML = '';
+          document.getElementById('optionsDiv').innerHTML = '';
+      })
+   </script>
+   <body style="background-color: #0D1418; color:wheat; height:100vh; font-size: large;">
+      <div class="container">
+        <h1 style="text-align: center;">TES Game Mania</h1>
+        <div id="questionName" class="card"></div>
+        <div id="optionsDiv" class="card"></div>
+      </div>
+   </body>
+   <style>
+       .card{
+           margin:10px;
+       }
+   </style>
+</html>

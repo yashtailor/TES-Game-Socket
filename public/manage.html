@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+   <head><title>Hello world</title></head>
+   <script src="/socket.io/socket.io.js"></script>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+   <script>
+      var socket = io();
+   </script>
+   <body style="background-color: #0D1418; color:wheat; height: 100%;">
+      <div class="container">
+        <h1 style="text-align: center; font-size: 25px;">TES Managing Studio</h1>
+        <input type="text" class="input" placeholder="Game Name" style="margin-bottom:5px;" id="game">
+        <div class="columns" style="margin: 10px;">
+            <button class="button is-info column bottom-btns" onclick="newGame()">Create Game</button>
+            <button onclick="endGame()" class="button is-danger column bottom-btns">End Game</button>
+        </div>
+        <textarea class="textarea" placeholder="Question Name" id="question" style="margin:10px"></textarea>
+        <div style="text-align: center;">
+            <button onclick="newOption()" class="button">New Options</button>
+        </div>
+        <div id="options" style="margin:10px;">
+  
+        </div>
+        <div class="columns" style="margin: 10px;">
+          <button id="publish" class="button is-info column bottom-btns">Publish</button>
+          <button id="reveal" onclick="reveal()" class="button is-warning column bottom-btns">Reveal</button>
+          <button id="clear" onclick="clearQuestion()" class="button is-danger column bottom-btns">Clear</button>
+        </div>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmsbIebpB20p9dbNmyp1g_70glQ73CWEbGhMBYK3SzVol2nMyt8HPib2NmgKdyQ4SoGgA&usqp=CAU" alt="TES LOGO" style="height:50%;width:100%">
+      </div>
+   </body>
+   <script>
+      function newOption(){
+          const optionNode = document.createElement('div');
+          const deleteBtn = document.createElement('button');
+          const radioBtn = document.createElement('input');
+          radioBtn.setAttribute('type','radio');
+          radioBtn.setAttribute('name','options');
+          radioBtn.classList.add('radio-btn');
+          deleteBtn.classList.add('button');
+          deleteBtn.classList.add('is-danger');
+          deleteBtn.innerText = "delete";
+          deleteBtn.addEventListener('click',()=>{
+              deleteBtn.parentNode.parentNode.removeChild(optionNode);
+          })
+          deleteBtn.classList.add('column');
+          deleteBtn.style.margin = "5px";
+          const option = document.createElement('input');
+          option.classList.add('options');
+          option.classList.add('input');
+          option.classList.add('column');
+          option.classList.add('is-four-fifths');
+          option.style.margin = "5px";
+          optionNode.appendChild(radioBtn);
+          optionNode.appendChild(option);
+          optionNode.appendChild(deleteBtn);
+          optionNode.classList.add('columns');
+          document.getElementById('options').appendChild(optionNode);
+      }
+      function reveal(){
+          let idx = 0;
+          const radios = document.getElementsByClassName('radio-btn');
+          for(let i=0;i<radios.length;i++){
+              if(radios[i].checked){
+                  idx=i;
+                  break;
+              }
+          }
+          socket.emit('reveal-answer',idx);
+      }
+      function clearQuestion(){
+          socket.emit('clear-question');
+      }
+      function newGame(){
+          const data = {
+              name: document.getElementById('game').value
+          }
+          socket.emit('create-game',data);
+      }
+      function endGame(){
+          socket.emit('end-game');
+      }
+      document.getElementById('publish').addEventListener('click',()=>{
+          const optionElements = document.getElementsByClassName('options');
+          const options = [];
+          for(let i=0;i<optionElements.length;i++){
+              options.push(optionElements[i].value);
+          }
+          console.log(options);
+          const question = {
+              name : document.getElementById('question').value,
+              options : options
+          }
+          socket.emit('publish-question',question);
+      })
+   </script>
+   <style>
+       .bottom-btns{
+           margin:5px;
+           font-size: large;
+       }
+   </style>
+</html>
