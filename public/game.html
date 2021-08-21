@@ -23,7 +23,7 @@
             newOption.addEventListener('click',()=>{
                 const sendData = {
                     userName : localStorage.getItem('name'),
-                    optionSelected : idx+1
+                    optionSelected : idx
                 }
                 socket.emit('question-answer',sendData);
                 newOption.style.backgroundColor = "blue";
