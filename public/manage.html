@@ -5,8 +5,98 @@
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
    <script>
-      var socket = io();
+     var socket = io();
+
+     function reveal(idx){
+        //   let idx = 0;
+        //   const radios = document.getElementsByClassName('radio-btn');
+        //   for(let i=0;i<radios.length;i++){
+        //       if(radios[i].checked){
+        //           idx=i;
+        //           break;
+        //       }
+        //   }
+        console.log(idx);
+          socket.emit('reveal-answer',idx);
+      }
+
+     readExcelFile = async ( file ) =>{
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+        var data = e.target.result;
+        var workbook = XLSX.read(data, {
+            type: 'binary'
+        });
+
+        workbook.SheetNames.forEach(function(sheetName) {
+            // Here is your object
+            var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+            var json_object = JSON.stringify(XL_row_object);
+            console.log(XL_row_object);
+            const questions =  document.getElementById('questions');
+            questions.innerHTML = '';
+            XL_row_object.forEach((question)=>{
+                const newQuestion = document.createElement('div');
+                newQuestion.classList.add('question');
+                const questionName = document.createElement('div');
+                const options = document.createElement('div');
+                const optionNames = [];
+                questionName.innerText = question.Question;
+                for(let i=1;i<=Object.entries(question).length-2;i++){
+                    if(question['Option'+i]!='N/A'){
+                        optionNames.push(question['Option'+i]);
+                        const newOption = document.createElement('div');
+                        newOption.innerText = question['Option'+i];
+                        newOption.classList.add('option');
+                        if(i==question.Answer){
+                            newOption.classList.add('answer');
+                        }
+                        options.appendChild(newOption);
+                    }else break;
+                }
+                options.classList.add('options');
+                const publishButton = document.createElement('button');
+                publishButton.innerText = 'Publish';
+                newQuestion.appendChild(publishButton);
+                newQuestion.appendChild(questionName);
+                newQuestion.appendChild(options);
+                publishButton.addEventListener('click',()=>{
+                    const publishedQuestion = {
+                        name : question.Question,
+                        options : optionNames
+                    }
+                    socket.emit('publish-question',publishedQuestion);
+                    newQuestion.style.backgroundColor = 'red';
+                    newQuestion.style.color = "white";
+                    const revealButton = document.createElement('button');
+                    revealButton.innerText = 'Reveal';
+                    revealButton.addEventListener('click',()=>{
+                        reveal(question.Answer);
+                        newQuestion.style.display='None';
+                    });
+                    newQuestion.append(revealButton);
+                    publishButton.style.display='None';
+                })
+                questions.appendChild(newQuestion);
+            })
+        })
+
+        };
+
+        reader.onerror = function(ex) {
+        console.log(ex);
+        };
+
+        reader.readAsBinaryString(file);
+     }
+     function parseFile(event){
+        //  console.log(event.target.files)
+        readExcelFile(event.target.files[0]);
+     }
    </script>
    <body style="background-color: #0D1418; color:wheat; height: 100%;">
       <div class="container">
@@ -16,15 +106,19 @@
             <button class="button is-info column bottom-btns" onclick="newGame()">Create Game</button>
             <button onclick="endGame()" class="button is-danger column bottom-btns">End Game</button>
         </div>
-        <textarea class="textarea" placeholder="Question Name" id="question" style="margin:10px"></textarea>
-        <div style="text-align: center;">
+        <input type="file" id="excelFile" onchange="parseFile(event)">
+        <!-- <textarea class="textarea" placeholder="Question Name" id="question" style="margin:10px"></textarea> -->
+        <!-- <div style="text-align: center;">
             <button onclick="newOption()" class="button">New Options</button>
         </div>
         <div id="options" style="margin:10px;">
   
+        </div> -->
+        <div id="questions">
+
         </div>
         <div class="columns" style="margin: 10px;">
-          <button id="publish" class="button is-info column bottom-btns">Publish</button>
+          <!-- <button id="publish" class="button is-info column bottom-btns">Publish</button>[] -->
           <button id="reveal" onclick="reveal()" class="button is-warning column bottom-btns">Reveal</button>
           <button id="clear" onclick="clearQuestion()" class="button is-danger column bottom-btns">Clear</button>
         </div>
@@ -59,17 +153,6 @@
           optionNode.classList.add('columns');
           document.getElementById('options').appendChild(optionNode);
       }
-      function reveal(){
-          let idx = 0;
-          const radios = document.getElementsByClassName('radio-btn');
-          for(let i=0;i<radios.length;i++){
-              if(radios[i].checked){
-                  idx=i;
-                  break;
-              }
-          }
-          socket.emit('reveal-answer',idx);
-      }
       function clearQuestion(){
           socket.emit('clear-question');
       }
@@ -100,6 +183,19 @@
        .bottom-btns{
            margin:5px;
            font-size: large;
+       }
+       .question{
+           background-color: whitesmoke;
+           padding: 10px;
+           box-shadow: 2px 2px 2px black;
+           margin: 10px;
+           border-radius: 10px;
+           color:black;
+           width: 40%;
+           cursor:pointer;
+       }
+       .answer{
+           background-color: green;
        }
    </style>
 </html>

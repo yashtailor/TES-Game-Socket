@@ -23,7 +23,7 @@
             newOption.addEventListener('click',()=>{
                 const sendData = {
                     userName : localStorage.getItem('name'),
-                    optionSelected : idx
+                    optionSelected : idx+1
                 }
                 socket.emit('question-answer',sendData);
                 newOption.style.backgroundColor = "blue";
@@ -48,6 +48,8 @@
       socket.on('broadcast-clear',()=>{
           document.getElementById('questionName').innerHTML = '';
           document.getElementById('optionsDiv').innerHTML = '';
+          optionSelected = null;
+          document.getElementById('optionsDiv').style.pointerEvents = 'auto';
       })
    </script>
    <body style="background-color: #0D1418; color:wheat; height:100vh; font-size: large;">

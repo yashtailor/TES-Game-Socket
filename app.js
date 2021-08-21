@@ -73,10 +73,16 @@ io.on('connection', function(socket){
    })
 
    socket.on('reveal-answer',(data)=>{
+       data = Number(data)
+       console.log("HERE===========",data);
         io.sockets.emit('broadcast-answer',data);
+        console.log("REVEAL ANSWER",currentQuestion,data)
         currentQuestion.voters.forEach((voter)=>{
             if(voter.optionSelected == data){
-                participants[voter.userName] += 1;
+                const voterName = String(voter.userName);
+                console.log("VOTER",voter,participants.get(voterName));
+                participants.set(voterName,participants.get(voterName)+1);
+                console.log("PARTICIPANTS",participants);
             }
         })
         currentQuestion.question = null;
