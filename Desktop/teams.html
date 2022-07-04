@@ -1,0 +1,105 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teams</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+</head>
+<body style="background-image: url('TES_LOGO.jpg');background-size: cover;">
+    <!-- <progress class="progress is-success" value="60" max="100">60%</progress> -->
+    <h1 id="scb_name" style="text-align: center;font-size: larger;color:white;"><b>Scoreboard</b></h1>
+    <div class="rows is-multiline m-1 is-centered" id="teams" style="width: 100%;padding: 1em;">
+         
+    </div>
+</body>
+<!-- <script src="app.js">
+
+</script> -->
+<script>
+    window.addEventListener('storage',function(){
+        let num = document.getElementsByClassName('team').length+1;
+        console.log(localStorage.getItem(num));
+        if(localStorage.getItem('hasNameChanged')=="true"){
+            localStorage.setItem('hasNameChanged',"false");
+            let idx = localStorage.getItem('whoseNameChanged');
+            document.getElementById('teamName'+idx).innerHTML = localStorage.getItem('whatNameChanged');
+        }else if(localStorage.getItem('hasScbChanged')=="true"){
+            localStorage.setItem('hasScbChanged',"false");
+            document.getElementById('scb_name').innerHTML = localStorage.getItem('scb_name');
+        }else if(localStorage.getItem('toDelete')=="true"){
+            localStorage.setItem('toDelete',"false");
+            var idx2 = localStorage.getItem("idxDel");
+            console.log('idx',localStorage.getItem("idxDel"));
+            document.getElementById('team'+idx2).style.display = 'none';
+        }else if(localStorage.getItem('colorChanged')=="true"){
+            localStorage.setItem('colorChanged',"false");
+            let idx = localStorage.getItem('whoseColorChanged');
+            document.getElementById('team'+idx).style.backgroundColor = localStorage.getItem('whichColorChanged');
+        }else if(localStorage.getItem(num)==null){
+            console.log('came here');
+            let teams = document.getElementsByClassName('team');
+            let len = document.getElementsByClassName('team').length;
+            let scores = [];
+            for(let i=1;i<=len;i++){
+                let updated_score = JSON.parse(localStorage.getItem(i)).score;
+                scores.push(updated_score);
+            }
+            let unique_scores = new Set(scores)
+            unique_scores = Array.from(unique_scores);
+            unique_scores.sort(function(a, b){return b-a});
+            let f_ranks = new Map();
+            for(let i=0;i<unique_scores.length;i++){
+                f_ranks.set(unique_scores[i],i);
+            }
+            let total_ranks = f_ranks.size;
+            console.log(f_ranks,total_ranks);
+            for(let i=1;i<=len;i++){
+                let cur_score_div = document.getElementById('teamScore'+i);
+                let updated_score = JSON.parse(localStorage.getItem(i)).score;
+                if(parseInt(cur_score_div.innerHTML) !=updated_score){
+                    cur_score_div.innerHTML = updated_score;
+                }
+                let rank = f_ranks.get(updated_score);
+                console.log('rank',rank);
+                let l = (rank*100)/total_ranks;
+                let r = 100-l;
+                console.log(l,r);
+                if(r < 15)r = 15;
+                let cur_div = document.getElementById('team'+i);
+                cur_div.style.width = r+'%';
+                // cur_div.style.background = 'linear-gradient(left, #4ef884 '+ (rank*100)/total_ranks +'%, #e62087 '+r+'%)';
+            }
+        }else{
+            let new_div = document.createElement('div');
+            new_div.className = 'column is-one-quarter m-1';
+            new_div.id = 'team'+num;
+            let new_inner_div_name = document.createElement('span');
+            let new_inner_div_score = document.createElement('span');
+            new_inner_div_name.className = 'tag';
+            new_inner_div_name.id = 'teamName'+num;
+            new_div.style.fontSize = '1.5em';
+            new_inner_div_score.className = 'team tag';
+            new_inner_div_score.id = 'teamScore'+num;
+            new_inner_div_score.style.float = 'right';
+            new_div.style.backgroundColor = JSON.parse(localStorage.getItem(num)).bgcolor;
+            new_inner_div_name.innerHTML = JSON.parse(localStorage.getItem(num)).name;
+            new_inner_div_score.innerHTML = JSON.parse(localStorage.getItem(num)).score;
+            new_div.appendChild(new_inner_div_name);
+            new_div.appendChild(new_inner_div_score);
+            document.getElementById('teams').appendChild(new_div);
+            // new_div.style.background = 'linear-gradient(to right, #4ef884 100%, #e62087 0%)';
+        }
+    })
+</script>
+<style>
+    .team{
+        transition: all 2s linear;
+        /* transition-delay: 1s; */
+    }
+    .tag{
+        font-size: 1rem !important;
+        font-weight: bold;
+    }
+</style>
+</html>

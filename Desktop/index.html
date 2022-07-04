@@ -1,0 +1,44 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teamify</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <script>
+        function change_scb(){
+            localStorage.setItem('scb_name',document.getElementById('scb_name').value);
+            localStorage.setItem('hasScbChanged',"true");
+        }
+    </script>
+</head>
+<body style="background-image: url('TES_LOGO.jpg');background-size: cover;color:white;">
+    <div style="text-align: center;padding:1em;" class="columns">
+        <div class="column" style="font-size:1.3rem;">Auto Score Updater</div>
+        <input class="input column" type="text" placeholder="Scoreboard Name" id="scb_name" value="Scoreboard" onchange="change_scb()"> 
+    </div>
+    <div style="padding: 1rem;">
+        <div class="control columns" style="margin: 2px;margin-left: auto;margin-right: auto;">
+            <div class="column is-three-quaters">
+                <input class="input" type="text" placeholder="Text input" id="team_name">
+            </div>
+            <div class="column">
+                <!-- <div class="column"> -->
+                    <button class="button is-primary" onclick="add_team()">Add Team</button>
+                <!-- </div> -->
+                <!-- <div class="column"> -->
+                    <button class="button is-danger" onclick="window.open('teams.html')">Open Teams</button>
+                <!-- </div> -->
+                    <button class="button is-info" onclick="window.open('lucky_draw.html')">Open Lucky Draw</button>
+            </div>
+        </div>
+        <div id="teams">
+
+        </div>
+    </div>
+</body>
+<script>
+    localStorage.clear();
+</script>
+<script src="app.js"></script>
+</html>

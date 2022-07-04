@@ -1,0 +1,58 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Draw</title>
+</head>
+<body onkeypress="generate(event)">
+    <input type="number" name="lower limit" id="ll" value="1">
+    <input type="number" name="upper limit" id="ul" value="100">
+    <button onclick="generate()" class="gen-btn">Generate</button>
+    <div>
+        <ul id="nums">
+
+        </ul>
+    </div>
+</body>
+<script>
+    nums = new Map();
+    arr = []
+    function shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+        while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+    }
+    function generate(event){
+        if(event.keyCode != 103){
+            return;
+        }
+        let ll = document.getElementById('ll').value;
+        let ul = document.getElementById('ul').value;
+        if(arr.length == 0){
+            for(let i=ll;i<=ul;i++){
+                arr.push(i);
+            }
+        }
+        arr = shuffle(arr);
+        new_div = document.createElement('li');
+        new_div.innerHTML = arr.shift();
+        console.log(arr.length);
+        document.getElementById('nums').appendChild(new_div);
+    }
+</script>
+<style>
+    .gen-btn{
+        height: 10rem;
+        width: 10rem;
+        border-radius: 5rem;
+    }
+</style>
+</html>

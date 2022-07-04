@@ -1,0 +1,24 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TES</title>
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.11.min.js"></script>
+</head>
+<body>
+    <input type="text" name="name" id="name" placeholder="Enter Name">
+    <button id="go_ahead">Go Ahead</button>
+</body>
+<script>
+    document.getElementById('go_ahead').addEventListener('click',function(){
+        var name = document.getElementById('name').value;
+        if(name==null){
+            alert('Please Enter Name');
+        }else{
+            localStorage.setItem('name',name);
+            window.open('quiz.html')
+        }
+    })
+</script>
+</html>
